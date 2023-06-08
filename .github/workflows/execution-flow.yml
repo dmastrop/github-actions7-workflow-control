@@ -34,12 +34,23 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Test code
+        id: run-tests
+        # add the id so that we can reference this below in the "if" for the upload artifact below
         run: npm run test
       - name: Upload test report
       # this only  makes sense if tests are failing
       # if the tests above (Test code) fail, this would ordinarily not even be executed
+      # and since this test job will stop, the next job that needs this ("build" job and then "deploy") would not run and the workflow
+      # would be aborted
       # so the logic needs to be reversed. If the Test code fails then we want to upload the
-      # test-report artifact. But if the Test code passes we do not need to do the upload.  
+      # test-report artifact and finish this test job. But if the Test code passes we do not need to do the upload.
+      # need to add a condition to resolve this problem
+        #if: ${{ }}  for "if" this dynamic syntax is optional
+        if: steps.run-tests.outcome == 'failure'
+        # use the "steps" context object to reference the "run-tests" id above for the test results "outcome"
+        # Information about the steps that have been run in the current job.
+        # https://docs.github.com/en/actions/learn-github-actions/contexts 
+        # this "steps.run-tests.outcome" will tell us if the test results are success or failure.
         uses: actions/upload-artifact@v3
         with:
           name: test-report
