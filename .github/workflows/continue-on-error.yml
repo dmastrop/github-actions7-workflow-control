@@ -1,4 +1,6 @@
-name: Website Deployment
+name: Continue-on-error Website Deployment
+# rename this workflow because duplicate workflows is not what we want.
+# we need to be able to lookup this modified workflow on github actions....
 on:
   push:
     branches:
