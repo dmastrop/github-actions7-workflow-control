@@ -21,6 +21,6 @@ describe('MainContent', () => {
     await userEvent.click(button);
     // intentionally fail the test to test out failure scenario
     // remove the a from 'help-area' below to 'help-are'
-    expect(screen.getByTestId('help-are')).toBeInTheDocument();
+    expect(screen.getByTestId('help-area')).toBeInTheDocument();
   });
 });
