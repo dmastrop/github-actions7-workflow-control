@@ -107,7 +107,7 @@ jobs:
     # At this point no other job will ever fail because they are all starting at the same time
     # The way to solve this is to wait for lint and deploy (first and last jobs) (needs: [lint,deploy]) and then run
     # this report job.  It will implicitly look at all the jobs in between (like build and test)as well.
-    # Any failure in any of these 4 jobs will cause the report to run.
+    # Any failure in any of these 4 jobs will cause the report to run...
     runs-on: ubuntu-latest
     steps:
       - name: Output information
