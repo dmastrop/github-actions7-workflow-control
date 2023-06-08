@@ -1,23 +1,52 @@
 {
-  "numTotalTestSuites": 1,
-  "numPassedTestSuites": 0,
-  "numFailedTestSuites": 1,
+  "numTotalTestSuites": 2,
+  "numPassedTestSuites": 2,
+  "numFailedTestSuites": 0,
   "numPendingTestSuites": 0,
-  "numTotalTests": 0,
-  "numPassedTests": 0,
-  "numFailedTests": 0,
+  "numTotalTests": 2,
+  "numPassedTests": 1,
+  "numFailedTests": 1,
   "numPendingTests": 0,
   "numTodoTests": 0,
-  "startTime": 1662469084119,
+  "startTime": 1686247408084,
   "success": false,
   "testResults": [
     {
-      "assertionResults": [],
-      "startTime": 1662469084119,
-      "endTime": 1662469084119,
-      "status": "passed",
-      "message": "\u001b[0m\u001b[0m\n\u001b[0m\u001b[4m/Users/max/development/teaching/gh-flow/src/components/HelpBox.jsx\u001b[24m\u001b[0m\n\u001b[0m  \u001b[2m5:20\u001b[22m  \u001b[31merror\u001b[39m  'title' is missing in props validation  \u001b[2mreact/prop-types\u001b[22m\u001b[0m\n\u001b[0m  \u001b[2m5:27\u001b[22m  \u001b[31merror\u001b[39m  'text' is missing in props validation   \u001b[2mreact/prop-types\u001b[22m\u001b[0m\n\u001b[0m\u001b[0m\n\u001b[0m\u001b[31m\u001b[1m✖ 2 problems (2 errors, 0 warnings)\u001b[22m\u001b[39m\u001b[0m\n\u001b[0m\u001b[31m\u001b[1m\u001b[22m\u001b[39m\u001b[0m",
-      "name": "/Users/max/development/teaching/gh-flow/src/components/MainContent.test.jsx"
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "",
+            "MainContent"
+          ],
+          "fullName": " MainContent should render a button",
+          "status": "passed",
+          "title": "should render a button",
+          "duration": 83,
+          "failureMessages": []
+        },
+        {
+          "ancestorTitles": [
+            "",
+            "MainContent"
+          ],
+          "fullName": " MainContent should show the help area after clicking the button",
+          "status": "failed",
+          "title": "should show the help area after clicking the button",
+          "duration": 79,
+          "failureMessages": [
+            "Unable to find an element by: [data-testid=\"help-are\"]\n\nIgnored nodes: comments, script, style\n\u001b[36m<body>\u001b[39m\n  \u001b[36m<div>\u001b[39m\n    \u001b[36m<main>\u001b[39m\n      \u001b[36m<button>\u001b[39m\n        \u001b[0mHide\u001b[0m\n        \u001b[0m Help\u001b[0m\n      \u001b[36m</button>\u001b[39m\n      \u001b[36m<section\u001b[39m\n        \u001b[33mdata-testid\u001b[39m=\u001b[32m\"help-area\"\u001b[39m\n        \u001b[33mid\u001b[39m=\u001b[32m\"help-area\"\u001b[39m\n      \u001b[36m>\u001b[39m\n        \u001b[36m<article\u001b[39m\n          \u001b[33mclass\u001b[39m=\u001b[32m\"help-box\"\u001b[39m\n        \u001b[36m>\u001b[39m\n          \u001b[36m<h2>\u001b[39m\n            \u001b[0mWhat is Git?\u001b[0m\n          \u001b[36m</h2>\u001b[39m\n          \u001b[36m<p>\u001b[39m\n            \u001b[0mGit is a version control system, helping you to manage your code and create code snapshots.\u001b[0m\n          \u001b[36m</p>\u001b[39m\n        \u001b[36m</article>\u001b[39m\n        \u001b[36m<article\u001b[39m\n          \u001b[33mclass\u001b[39m=\u001b[32m\"help-box\"\u001b[39m\n        \u001b[36m>\u001b[39m\n          \u001b[36m<h2>\u001b[39m\n            \u001b[0mWhat is GitHub?\u001b[0m\n          \u001b[36m</h2>\u001b[39m\n          \u001b[36m<p>\u001b[39m\n            \u001b[0mGitHub is a company and online offering, providing you with tons of Git-related services (e.g., cloud repositories).\u001b[0m\n          \u001b[36m</p>\u001b[39m\n        \u001b[36m</article>\u001b[39m\n        \u001b[36m<article\u001b[39m\n          \u001b[33mclass\u001b[39m=\u001b[32m\"help-box\"\u001b[39m\n        \u001b[36m>\u001b[39m\n          \u001b[36m<h2>\u001b[39m\n            \u001b[0mWhat is GitHub Actions?\u001b[0m\n          \u001b[36m</h2>\u001b[39m\n          \u001b[36m<p>\u001b[39m\n            \u001b[0mGitHub Actions is an automation service (or CI / CD service) that helps you automate repository-related workflows and processes.\u001b[0m\n          \u001b[36m</p>\u001b[39m\n        \u001b[36m</article>\u001b[39m\n      \u001b[36m</section>\u001b[39m\n    \u001b[36m</main>\u001b[39m\n  \u001b[36m</div>\u001b[39m\n\u001b[36m</body>\u001b[39m"
+          ],
+          "location": {
+            "line": 29,
+            "column": 41
+          }
+        }
+      ],
+      "startTime": 1686247412770,
+      "endTime": 1686247412933,
+      "status": "failed",
+      "message": "",
+      "name": "/Users/davemastropolo/workspace/prod/course4-github-actions/7_87_workflow_control/src/components/MainContent.test.jsx"
     }
   ]
 }

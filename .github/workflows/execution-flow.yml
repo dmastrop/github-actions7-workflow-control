@@ -11,12 +11,16 @@ jobs:
       - name: Get code
         uses: actions/checkout@v3
       - name: Cache dependencies
-        id: cache
+      # use cache-id below for the if:
+        id: cache-id
         uses: actions/cache@v3
         with:
-          path: ~/.npm
+        # use node_modules instead of ~/.npm
+          path: node_modules
           key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
+      # don't do the npm ci if there is a cache hit on node_modules
+        if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
       - name: Lint code
         run: npm run lint
@@ -26,12 +30,16 @@ jobs:
       - name: Get code
         uses: actions/checkout@v3
       - name: Cache dependencies
-        id: cache
+      # use cache-id below for the if:
+        id: cache-id
         uses: actions/cache@v3
         with:
-          path: ~/.npm
+        # use node_modules instead of ~/.npm
+          path: node_modules
           key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
+      # don't do the npm ci if there is a cache hit on node_modules
+        if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
       - name: Test code
         id: run-tests
@@ -68,12 +76,32 @@ jobs:
       - name: Get code
         uses: actions/checkout@v3
       - name: Cache dependencies
-        id: cache
+      # NOTE: apply these changes below to the test job, and the build and lint jobs above as well
+        id: cache-id
         uses: actions/cache@v3
+        # the cache actions actually has an output
+        # https://github.com/actions/cache
+        # cache-hit - A boolean value to indicate an exact match 
+        # was found for the key.
+        # Note cache-hit will only be set to true when a cache hit occurs for the exact key match. 
+        # For a partial key match via restore-keys or a cache miss, it will be set to false.
+        # See Skipping steps based on cache-hit for info on using this output
+        # see below for usage with the if:
         with:
-          path: ~/.npm
+          path: node_modules
+          #path: ~/.npm
+          # this ~/.npm is an internally managed cache at github.
+          # even better to cache the entire npm_modules that is local
+          # don't cache global above but local
+          # and then skip the npm ci (below)if there is a cache hit
           key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
+        if: steps.cache-id.outputs.cache-hit != 'true'
+        # only execute the npm ci if there is NO cache hit on node_modules
+        # if there is a cache hit there is no need to run npm ci
+        # NOTE:npm ci is a command that stands for "clean install." 
+        # Unlike npm install , which can install packages from the node_modules cache, 
+        # npm ci installs packages from the package-lock. json file.
         run: npm ci
       - name: Build website
         id: build-website
