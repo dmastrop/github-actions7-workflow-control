@@ -46,11 +46,15 @@ jobs:
       # test-report artifact and finish this test job. But if the Test code passes we do not need to do the upload.
       # need to add a condition to resolve this problem
         #if: ${{ }}  for "if" this dynamic syntax is optional
-        if: steps.run-tests.outcome == 'failure'
+        if: failure() && steps.run-tests.outcome == 'failure'
         # use the "steps" context object to reference the "run-tests" id above for the test results "outcome"
         # Information about the steps that have been run in the current job.
         # https://docs.github.com/en/actions/learn-github-actions/contexts 
         # this "steps.run-tests.outcome" will tell us if the test results are success or failure.
+        # to get the files to actually upload on failure need to use the failure() function with the if: above
+        # NOTE that we are anding (&&) both the failure() functino and the if: so both must be true for the test report to be upload
+        # THUS: if node dependencies fail , for example, only failure() is true but not the if: and there will be no upload
+        # BUT: if test run fails then both failure() will be true and the if: will be true and the upload will occur!!
         uses: actions/upload-artifact@v3
         with:
           name: test-report
