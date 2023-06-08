@@ -99,13 +99,13 @@ jobs:
       - name: Deploy
         run: echo "Deploying..."
   report:
-    #needs: [lint, deploy]
+    needs: [lint, deploy]
     if: failure()
     # this job will run if any other job fails.  Failure will return true if 
     # any other job fails.
     # The problem with just using this alone is that report job starts in parallel with test and link jobs
-    # At this point no other job will ever fail because they are all startin at the same time
-    # The way to solve this is to wait for lint and deploy (first and last jobs) and then run
+    # At this point no other job will ever fail because they are all starting at the same time
+    # The way to solve this is to wait for lint and deploy (first and last jobs) (needs: [lint,deploy]) and then run
     # this report job.  It will implicitly look at all the jobs in between (like build and test)as well.
     # Any failure in any of these 4 jobs will cause the report to run.
     runs-on: ubuntu-latest
