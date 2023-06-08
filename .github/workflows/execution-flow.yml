@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - master
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -39,6 +40,7 @@ jobs:
         with:
           name: test-report
           path: test.json
+          # this is present in the root directory level
   build:
     needs: test
     runs-on: ubuntu-latest
