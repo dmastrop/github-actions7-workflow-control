@@ -36,11 +36,16 @@ jobs:
       - name: Test code
         run: npm run test
       - name: Upload test report
+      # this only  makes sense if tests are failing
+      # if the tests above (Test code) fail, this would ordinarily not even be executed
+      # so the logic needs to be reversed. If the Test code fails then we want to upload the
+      # test-report artifact. But if the Test code passes we do not need to do the upload.  
         uses: actions/upload-artifact@v3
         with:
           name: test-report
           path: test.json
           # this is present in the root directory level
+          # this is uploaded to github as an artifact named test-report
   build:
     needs: test
     runs-on: ubuntu-latest
@@ -63,6 +68,7 @@ jobs:
         with:
           name: dist-files
           path: dist
+          # this is also uploaded to github as an artifact named dist-files folder
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -71,6 +77,8 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: dist-files
+          # the uploaded artifact "dist-files" is now downloaded to this runner during the deploy phase
+          # the artifact folder is listed below with the "ls" command....
       - name: Output contents
         run: ls
       - name: Deploy

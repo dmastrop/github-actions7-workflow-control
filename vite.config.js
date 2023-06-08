@@ -10,5 +10,6 @@ export default defineConfig({
     setupFiles: './src/test/setup.js',
     reporters: ['json'],
     outputFile: 'test.json'
+    // this generates the test.json file which is uploaded as part of the github test job
   },
 });

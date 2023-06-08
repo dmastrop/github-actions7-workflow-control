@@ -19,6 +19,8 @@ describe('MainContent', () => {
 
     const button = screen.getByRole('button');
     await userEvent.click(button);
-    expect(screen.getByTestId('help-area')).toBeInTheDocument();
+    // intentionally fail the test to test out failure scenario
+    // remove the a from 'help-area' below to 'help-are'
+    expect(screen.getByTestId('help-are')).toBeInTheDocument();
   });
 });
