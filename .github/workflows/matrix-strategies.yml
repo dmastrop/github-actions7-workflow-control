@@ -3,24 +3,40 @@ on: push
 jobs:
   build:
     continue-on-error: true
+    #continue executing all jobs in this matrix even if some have failed.
+    # default behavior aborts any running jobs if one has failed
+    # NOTE all 6 jobs are launched in parallel in this project.
     strategy:
       matrix:
+      # add keys, any value that can be changing and that want to run the job for different values
         node-version: [12, 14, 16]
         operating-system: [ubuntu-latest, windows-latest]
-        include:
-          - node-version: 18
-            operating-system: ubuntu-latest
-        exclude:
-          - node-version: 12
-            operating-system: windows-latest
+        
+        #include:
+        #  - node-version: 18
+        #    operating-system: ubuntu-latest
+        #exclude:
+        #  - node-version: 12
+        #    operating-system: windows-latest
+
+    #runs-on: ubuntu-latest
     runs-on: ${{ matrix.operating-system }}
+    # set the runner dynamically with matrix strategy
+    # matrix is an context object like steps, etc....
+    # this particular matrix will run the job with runners using
+    # operating system ubuntu-latest and windows-latest for this job "build"
+    
     steps:
       - name: Get Code
         uses: actions/checkout@v3
       - name: Install NodeJS
+      # pre-installed on ubuntu but here we want to use a specific version so use actions setup-node
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+          # this is a matirx so this intall NodeJS will occur with node version 12,14, and 16....
+          # each on ubuntu-latest and windows-latest for a total of 6 combinations
+          #node-version: 14
       - name: Install Dependencies
         run: npm ci
       - name: Build project
