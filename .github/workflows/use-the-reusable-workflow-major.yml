@@ -123,6 +123,12 @@ jobs:
     # because this reusable yml is on: workflow_call, it can be called
 
     uses: ./.github/workflows/reusable-workflow-minor.yml
+    with:
+    # we must provide the input artifact to the reusable yml file. Otherwise it will use default which is "dist"
+    # in this case it will be "dist-files", see above
+      artifact-name: dist-files
+      # "artifact-name" is the name of the variable used as input for the reusable yml
+      # we must use this same name.  The value of this is "dist-files" for this particular workflow
 
     #runs-on: ubuntu-latest
     #steps:
