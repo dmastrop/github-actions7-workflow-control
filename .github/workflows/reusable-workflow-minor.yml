@@ -4,23 +4,38 @@ name: Reusable Deploy Minor
   # workflow_call by another workflow.
 
 ## iteration 1 below:
-on: workflow_call
-jobs:
-    deploy:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Output information
-          run: echo "Deploying and uploading first iterantino of reusable deploy minor"
 
-## iteration 2 below:
-#on: 
-#  workflow_call:
-#    inputs:
-#      artifact-name:
-#        description: The name of the deployable artifact files
-#        required: false
-#        default: dist
-#        type: string
+#on: workflow_call
+#jobs:
+#    deploy:
+#      runs-on: ubuntu-latest
+#      steps:
+#        - name: Output information
+#          run: echo "Deploying and uploading first iterantino of reusable deploy minor"
+
+
+
+
+## iteration 2 below, recall in the build job of the use-the-reusable that we generate
+## the artifacts and upload the artifacts from that runner to github
+## we now want to download these artifacts like the original deploy did to this REUSABLE deploy runner
+## hardcoding the download name to dist-files like in the original is not good because this yml would no longer
+## be generally reusable.  Needs to be dynamic.
+## we must get artifact name from the use-the-reusable as an input
+## the name is "artifact-name"
+
+on: 
+  workflow_call:
+    inputs:
+    # this is a reserved word inputs
+      artifact-name:
+        description: The name of the deployable artifact files from the use-the-reusable
+        required: false
+        #true means the workflow will fail if we are missing this input
+        #false means workflow will not fail even if we are missing this artifact input
+        default: dist
+        # dist will be the artifact value if it is missing
+        type: string
 #    outputs:
 #      result:
 #        description: The result of the deployment operation
@@ -28,20 +43,25 @@ jobs:
 #    # secrets:
 #      # some-secret:
 #        # required: false
-#jobs:
-#  deploy:
+jobs:
+  deploy:
 #    outputs:
 #      outcome: ${{ steps.set-result.outputs.step-result }}
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Get Code
-#        uses: actions/download-artifact@v3
-#        with:
-#          name: ${{ inputs.artifact-name }}
-#      - name: List files
-#        run: ls
-#      - name: Output information
-#        run: echo "Deploying & uploading..."
-#      - name: Set result output
-#        id: set-result
-#        run: echo "step-result=success" >> $GITHUB_OUTPUT
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.artifact-name }}
+          # this is the inputs context
+          # https://docs.github.com/en/actions/learn-github-actions/contexts#inputs-context
+          # The inputs context contains input properties passed to an action, to a reusable workflow, or to a manually triggered workflow. 
+          # "artifact-name" is from the inputs above
+
+      - name: List files
+        run: ls
+      - name: Output information
+        run: echo "Deploying & uploading..."
+      - name: Set result output
+        id: set-result
+        run: echo "step-result=success" >> $GITHUB_OUTPUT
