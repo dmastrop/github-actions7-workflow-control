@@ -54,9 +54,17 @@ jobs:
       - name: Upload test report
 
     ## now for continue-on-error.yml, comment out the if: below
-    # and on the Test code job above us a "continue-on-error: true"
+    ## and on the Test code job above use a "continue-on-error: true"
 
-      # this only  makes sense if tests are failing
+    ## Addtional notes on this: 
+    ## https://docs.github.com/en/actions/learn-github-actions/contexts#steps-context
+    ## steps.step-id.conclusion: this is the result of a completed step AFTER the continue-on-error is applied
+    ## this is most often success because after continue-on-error is treated as success at job level (job continues on) even if step itself fails 
+
+    ## steps.step-id.outcome (used initially below): this is the result of a complete step before continue-on-error is applied.
+    ## When continue-on-error step fails the outcome itself is a failure (this value) but the final conclusion is a success and the job progresses
+
+      # this Upload test report, only  makes sense if tests are failing
       # if the tests above (Test code) fail, this would ordinarily not even be executed
       # and since this test job will stop, the next job that needs this ("build" job and then "deploy") would not run and the workflow
       # would be aborted
@@ -72,7 +80,7 @@ jobs:
         # https://docs.github.com/en/actions/learn-github-actions/contexts 
         # this "steps.run-tests.outcome" will tell us if the test results are success or failure.
         # to get the files to actually upload on failure need to use the failure() function with the if: above
-        # NOTE that we are anding (&&) both the failure() functino and the if: so both must be true for the test report to be upload
+        # NOTE that we are anding (&&) both the failure() function and the if: so both must be true for the test report to be upload
         # THUS: if node dependencies fail , for example, only failure() is true but not the if: and there will be no upload
         # BUT: if test run fails then both failure() will be true and the if: will be true and the upload will occur!!
         uses: actions/upload-artifact@v3
@@ -93,6 +101,7 @@ jobs:
         uses: actions/cache@v3
         # the cache actions actually has an output
         # https://github.com/actions/cache
+        # https://github.com/actions/cache#skipping-steps-based-on-cache-hit
         # cache-hit - A boolean value to indicate an exact match 
         # was found for the key.
         # Note cache-hit will only be set to true when a cache hit occurs for the exact key match. 
