@@ -5,7 +5,7 @@ jobs:
     continue-on-error: true
     #continue executing all jobs in this matrix even if some have failed.
     # default behavior aborts any running jobs if one has failed
-    # NOTE all 6 jobs are launched in parallel in this project.
+    # NOTE all 6 jobs are launched in parallel in this project...
     strategy:
       matrix:
       # add keys, any value that can be changing and that want to run the job for different values
