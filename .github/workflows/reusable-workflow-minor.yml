@@ -29,6 +29,7 @@ on:
     inputs:
     # this is a reserved word inputs
       artifact-name:
+      # this is the name of the input that we have chosen
         description: The name of the deployable artifact files from the use-the-reusable
         required: false
         #true means the workflow will fail if we are missing this input
@@ -36,17 +37,31 @@ on:
         default: dist
         # dist will be the artifact value if it is missing
         type: string
-#    outputs:
-#      result:
-#        description: The result of the deployment operation
-#        value: ${{ jobs.deploy.outputs.outcome }}
-#    # secrets:
+
+    outputs:
+      result:
+      # this is the name you give the output
+        description: The result of the deployment operation
+        value: ${{ jobs.deploy.outputs.outcome }}
+        # jobs is another context. It can only be used in reusable workflows
+        # https://docs.github.com/en/actions/learn-github-actions/contexts#jobs-context
+        # this value is from the jobs.deploy.outputs.outcome directly below
+        # the output of the deploy job was configured as below so that it could be referenced here as a final output of 
+        # this reusable workflow deploy job.  This is the result output of this entire workflow
+
+
+#secrets at the same level as inputs: and outputs: above
+#    secrets:
 #      # some-secret:
 #        # required: false
+
 jobs:
   deploy:
-#    outputs:
-#      outcome: ${{ steps.set-result.outputs.step-result }}
+    outputs:
+    # this is an output of the deploy job
+      outcome: ${{ steps.set-result.outputs.step-result }}
+# this uses the steps context. "step-result" is the name used below for the result of the deployment
+
     runs-on: ubuntu-latest
     steps:
       - name: Get build artifacts
@@ -65,3 +80,5 @@ jobs:
       - name: Set result output
         id: set-result
         run: echo "step-result=success" >> $GITHUB_OUTPUT
+        # use this new syntax
+        # step-result is the name of the result for this step

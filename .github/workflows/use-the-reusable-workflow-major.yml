@@ -129,7 +129,23 @@ jobs:
       artifact-name: dist-files
       # "artifact-name" is the name of the variable used as input for the reusable yml
       # we must use this same name.  The value of this is "dist-files" for this particular workflow
+  
+    #secrets are like inputs. They are provided at the same level as with: and uses: above
+    # this secret "some-secret" can then be referenced by the reusable workflow
+    #secrets:
+    #  some-secret: ${{ secrets.some-secret }}
 
+  Print-deploy-job-of-reusable-workflow:
+    needs: deploy
+    #from above
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print the deploy output from reusable workflow
+        run: echo "${{ needs.deploy.outputs.result }}"
+        # result is the name of the result in the reusable workflow
+
+
+    # old code below:
     #runs-on: ubuntu-latest
     #steps:
     #  - name: Get build artifacts
@@ -142,6 +158,7 @@ jobs:
     #    run: ls
     #  - name: Deploy
     #    run: echo "Deploying..."
+  
   report:
     needs: [lint, deploy]
     if: failure()
