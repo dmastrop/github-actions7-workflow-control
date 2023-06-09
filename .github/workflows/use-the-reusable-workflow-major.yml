@@ -1,0 +1,154 @@
+name: Using the Reusable Workflow Major
+on:
+  push:
+    branches:
+      - main
+      - master
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Cache dependencies
+      # use cache-id below for the if:
+        id: cache-id
+        uses: actions/cache@v3
+        with:
+        # use node_modules instead of ~/.npm
+          path: node_modules
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+      # don't do the npm ci if there is a cache hit on node_modules
+        if: steps.cache-id.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Lint code
+        run: npm run lint
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Cache dependencies
+      # use cache-id below for the if:
+        id: cache-id
+        uses: actions/cache@v3
+        with:
+        # use node_modules instead of ~/.npm
+          path: node_modules
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+      # don't do the npm ci if there is a cache hit on node_modules
+        if: steps.cache-id.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Test code
+        id: run-tests
+        # add the id so that we can reference this below in the "if" for the upload artifact below
+        run: npm run test
+      - name: Upload test report
+      # this only  makes sense if tests are failing
+      # if the tests above (Test code) fail, this would ordinarily not even be executed
+      # and since this test job will stop, the next job that needs this ("build" job and then "deploy") would not run and the workflow
+      # would be aborted
+      # so the logic needs to be reversed. If the Test code fails then we want to upload the
+      # test-report artifact and finish this test job. But if the Test code passes we do not need to do the upload.
+      # need to add a condition to resolve this problem
+        #if: ${{ }}  for "if" this dynamic syntax is optional
+        if: failure() && steps.run-tests.outcome == 'failure'
+        # use the "steps" context object to reference the "run-tests" id above for the test results "outcome"
+        # Information about the steps that have been run in the current job.
+        # https://docs.github.com/en/actions/learn-github-actions/contexts 
+        # this "steps.run-tests.outcome" will tell us if the test results are success or failure.
+        # to get the files to actually upload on failure need to use the failure() function with the if: above
+        # NOTE that we are anding (&&) both the failure() functino and the if: so both must be true for the test report to be upload
+        # THUS: if node dependencies fail , for example, only failure() is true but not the if: and there will be no upload
+        # BUT: if test run fails then both failure() will be true and the if: will be true and the upload will occur!!
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: test.json
+          # this is present in the root directory level
+          # this is uploaded to github as an artifact named test-report
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Cache dependencies
+      # NOTE: apply these changes below to the test job, and the build and lint jobs above as well
+        id: cache-id
+        uses: actions/cache@v3
+        # the cache actions actually has an output
+        # https://github.com/actions/cache
+        # https://github.com/actions/cache#skipping-steps-based-on-cache-hit
+        # cache-hit - A boolean value to indicate an exact match 
+        # was found for the key.
+        # Note cache-hit will only be set to true when a cache hit occurs for the exact key match. 
+        # For a partial key match via restore-keys or a cache miss, it will be set to false.
+        # See Skipping steps based on cache-hit for info on using this output
+        # see below for usage with the if:
+        with:
+          path: node_modules
+          #path: ~/.npm
+          # this ~/.npm is an internally managed cache at github.
+          # even better to cache the entire npm_modules that is local
+          # don't cache global above but local
+          # and then skip the npm ci (below)if there is a cache hit
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        if: steps.cache-id.outputs.cache-hit != 'true'
+        # only execute the npm ci if there is NO cache hit on node_modules
+        # if there is a cache hit there is no need to run npm ci
+        # NOTE:npm ci is a command that stands for "clean install." 
+        # Unlike npm install , which can install packages from the node_modules cache, 
+        # npm ci installs packages from the package-lock. json file.
+        run: npm ci
+      - name: Build website
+        id: build-website
+        run: npm run build
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist-files
+          path: dist
+          # this is also uploaded to github as an artifact named dist-files folder
+  deploy:
+    needs: build
+    # MAJOR EDIT IS HERE FOR THE Use-the-reusable-major.yml
+    # uses: are typically used for actions in steps
+    # now we want to use it at the job level and call the reusuable-workflow
+    # must provide full path to it relative to the root of this project folder
+    # could be a path in another repo.
+    # because this reusable yml is on: workflow_call, it can be called
+
+    uses: ./.github/workflows/reusable-workflow-minor.yml
+
+    #runs-on: ubuntu-latest
+    #steps:
+    #  - name: Get build artifacts
+    #    uses: actions/download-artifact@v3
+    #    with:
+    #      name: dist-files
+    #      # the uploaded artifact "dist-files" is now downloaded to this runner during the deploy phase
+    #      # the artifact folder is listed below with the "ls" command....
+    #  - name: Output contents
+    #    run: ls
+    #  - name: Deploy
+    #    run: echo "Deploying..."
+  report:
+    needs: [lint, deploy]
+    if: failure()
+    # this job will run if any other job fails.  Failure will return true if 
+    # any other job fails.
+    # The problem with just using this alone is that report job starts in parallel with test and link jobs
+    # At this point no other job will ever fail because they are all starting at the same time
+    # The way to solve this is to wait for lint and deploy (first and last jobs) (needs: [lint,deploy]) and then run
+    # this report job.  It will implicitly look at all the jobs in between (like build and test)as well.
+    # Any failure in any of these 4 jobs will cause the report to run....
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output information
+        run: | 
+          echo "Something went wrong"
+          echo "${{ toJSON(github) }}"      
