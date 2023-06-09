@@ -135,14 +135,14 @@ jobs:
     #secrets:
     #  some-secret: ${{ secrets.some-secret }}
 
-  Print-deploy-job-of-reusable-workflow:
+  Job-for-Print-deploy-output-of-reusable-workflow:
     needs: deploy
     #from above
     runs-on: ubuntu-latest
     steps:
       - name: Print the deploy output from reusable workflow
         run: echo "${{ needs.deploy.outputs.result }}"
-        # result is the name of the result in the reusable workflow
+        # "result" is the name of the result in the reusable workflow
 
 
     # old code below:
