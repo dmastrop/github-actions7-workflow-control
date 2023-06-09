@@ -6,18 +6,21 @@ jobs:
     #continue executing all jobs in this matrix even if some have failed.
     # default behavior aborts any running jobs if one has failed
     # NOTE all 6 jobs are launched in parallel in this project...
+    # note also that this is continue-on-error at job level.
     strategy:
       matrix:
       # add keys, any value that can be changing and that want to run the job for different values
+      # note node version 12 does not support all features in this job and will fail
         node-version: [12, 14, 16]
         operating-system: [ubuntu-latest, windows-latest]
         
-        #include:
-        #  - node-version: 18
-        #    operating-system: ubuntu-latest
-        #exclude:
-        #  - node-version: 12
-        #    operating-system: windows-latest
+        # can add key pairs to the matrix very selectively (single combinations)
+        include:
+          - node-version: 18
+            operating-system: ubuntu-latest
+        exclude:
+          - node-version: 12
+            operating-system: windows-latest
 
     #runs-on: ubuntu-latest
     runs-on: ${{ matrix.operating-system }}
