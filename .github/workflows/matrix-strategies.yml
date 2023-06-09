@@ -2,7 +2,7 @@ name: Matrix Demo workflow
 on: push
 jobs:
   build:
-    #continue-on-error: true
+    continue-on-error: true
     #continue executing all jobs in this matrix even if some have failed.
     # default behavior aborts any running jobs if one has failed
     # NOTE all 6 jobs are launched in parallel in this project...
